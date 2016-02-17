@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">GoogleMapApi</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main_activity_test">MainActivityTest</string>
+    <string name="title_activity_welcome_page">iParking</string>
+</resources>
