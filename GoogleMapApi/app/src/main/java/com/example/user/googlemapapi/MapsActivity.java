@@ -1,9 +1,12 @@
+/*
+* NCHU iot course 5th team
+*  */
+
 package com.example.user.googlemapapi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,9 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.Toast;
-
+import android.widget.ToggleButton;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,7 +35,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -47,7 +48,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,LocationListener ,GoogleMap.OnMarkerClickListener{
@@ -64,12 +64,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng defaultLocation;
     RequestQueue mQueue;
     Polyline line = null;
-    Switch mapDirectionSwitch;
+
+    ToggleButton mapDirectionToggleButton;
     Button button;
     Button button2;
     CheckBox followCheckBox;
-    
-    //String url_to_PHP = "http://140.130.19.38:58136/~s12/connect.php";//虎科LAB
+
     String url_to_PHP = "http://140.130.19.38:58136/~s12/connect.php";//虎科LAB(測試用)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         defaultLocation = new LatLng(24.1367938,120.685012);
-        mapDirectionSwitch = (Switch)findViewById(R.id.directionSwitch);
+        mapDirectionToggleButton = (ToggleButton)findViewById(R.id.directionToggleButton);
         button = (Button)findViewById(R.id.buttonMemory);
         button2 = (Button)findViewById(R.id.buttonDisplay);
         button.setOnClickListener(buttonClickListener);
@@ -127,7 +127,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    Switch.OnCheckedChangeListener switchCheckChangeListener = new Switch.OnCheckedChangeListener(){
+    ToggleButton.OnCheckedChangeListener directionCheckListener = new ToggleButton.OnCheckedChangeListener(){
+
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if(isChecked){
@@ -180,7 +181,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
-        mapDirectionSwitch.setOnCheckedChangeListener(switchCheckChangeListener);
+
+        mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
         mMap.setOnMarkerClickListener(this);
     }
     //GOOGLE API METHOD
@@ -212,13 +214,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             moveToMyLocation();
         }
 
-        if(mapDirectionSwitch.isChecked()) {
+        if(mapDirectionToggleButton.isChecked()) {
             if(line != null){//沒加這個會閃退
                 line.setVisible(true);
             }
             if(latlng != null) {
                 if(targetLatLng == null) {
                     Toast.makeText(MapsActivity.this, "請先點選停車位", Toast.LENGTH_SHORT).show();
+                    mapDirectionToggleButton.setChecked(false);
                 }else {
                     googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatLng.latitude, targetLatLng.longitude);//開關打開時才進行google導航
                 }

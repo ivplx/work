@@ -21,35 +21,46 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:touchscreenBlocksFocus="false"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/colorGrey">
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:text="記憶停車位"
-            android:id="@+id/buttonMemory" />
+            android:id="@+id/buttonMemory"
+            android:singleLine="false"
+            android:theme="@android:style/Theme.Light"
+            android:layout_gravity="left" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:text="顯示停車位"
-            android:id="@+id/buttonDisplay" />
+            android:id="@+id/buttonDisplay"
+            android:theme="@android:style/Theme.Light"
+            android:layout_gravity="left" />
+
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/directionToggleButton"
+            android:checked="false"
+            android:textOff="車位導航關閉"
+            android:textOn="車位導航開啟"
+            android:textSize="13dp"
+            android:theme="@android:style/Theme.Light"
+            android:layout_gravity="bottom" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="追蹤位置"
+            android:text="螢幕置中"
             android:id="@+id/checkBox"
-            android:checked="true" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="導航開關"
-            android:id="@+id/directionSwitch"
-            android:checked="false" />
+            android:checked="true"
+            android:theme="@android:style/Theme.Light" />
 
     </LinearLayout>
 
