@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<title>SmartChart</title>
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script>
+	$(function () {
+		datas = [];
+		$.post('database.php', {}, function(data) {
+			for(var i=0;i<data.length;i++){
+				datas.push(parseInt(data[i]['data']));
+			}
+			show(datas,[]);
+		},"json");
+		
+	});
+
+	function show(data,time){
+		$('#container').highcharts({
+	        title: {
+	            text: 'Light value charting',
+	            x: -20 //center
+	        },
+	        xAxis: {
+				title: {
+				text: 'Time'
+				},
+				categories: [],
+				labels:{ 
+					enabled: false,
+				}
+	        },
+	        yAxis: {
+	            title: {
+	                text: 'value'
+	            }
+	        },
+	        series: [{
+	            name: 'Light',
+	            data: data
+	        }]
+	    });
+	}
+	</script>
+</head>
+<body>
+	<div id="container">
+	chart here !!
+	</div>
+
+	<input type="text" id="input" value = "500">搜尋數值<form><select name="updown" id="optionval"><option value="1">above</option><option value="2">under</option></select></form><button onclick="send()" id="button">send</button>
+
+	<script type="text/javascript">
+
+	function send () {
+		$(function () {
+		
+		datas = [];
+		$.post('database.php', {}, function(data) {
+			var input = document.getElementById("input").value;
+
+			var optionval = $("#optionval").val();
+
+
+		if(optionval == 1){
+			for(var i=0;i<data.length;i++){
+				if(parseInt(data[i]['data'])>=parseInt(input)){
+					datas.push(parseInt(data[i]['data']));
+				}
+			}
+		}else{
+			for(var i=0;i<data.length;i++){
+				if(parseInt(data[i]['data'])<=parseInt(input)){
+					datas.push(parseInt(data[i]['data']));
+				}
+			}
+		}
+			
+			show(datas,[]);
+		},"json");
+		
+	});
+	}
+
+	</script>
+</body>
+</html>
