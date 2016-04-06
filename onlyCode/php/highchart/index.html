@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SmartChart</title>
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script>
+	$(function () {
+		datas = [];
+		$.post('database.php', {}, function(data) {
+			for(var i=0;i<data.length;i++){
+				datas.push(parseInt(data[i]['data']));
+			}
+			show(datas,[]);
+		},"json");
+		
+	});
+
+	function show(data,time){
+		$('#container').highcharts({
+	        title: {
+	            text: 'Light value charting',
+	            x: -20 //center
+	        },
+	        xAxis: {
+				title: {
+				text: 'Time'
+				},
+				categories: [],
+				labels:{ 
+					enabled: false,
+				}
+	        },
+	        yAxis: {
+	            title: {
+	                text: 'value'
+	            }
+	        },
+	        series: [{
+	            name: 'Light',
+	            data: data
+	        }]
+	    });
+	}
+	</script>
+</head>
+<body>
+	<div id="container">
+	chart here !!
+	</div>
+</body>
+</html>

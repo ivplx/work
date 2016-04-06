@@ -52,17 +52,28 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,LocationListener ,GoogleMap.OnMarkerClickListener{
 
+<<<<<<< HEAD
     private GoogleMap googleMap;
     private GoogleApiClient googleApiClient;
+=======
+    private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     Marker lastMarker = null;
     Marker lastClickedMarker = null;
     Marker marker= null;
     Marker parkingPlaceMarker = null;
     Marker lastParkingPlaceMarker = null;
     LatLng latlng = null;
+<<<<<<< HEAD
     LatLng targetLatlng = null;
     LatLng defaultLocation;
     RequestQueue rQueue;
+=======
+    LatLng targetLatLng = null;
+    LatLng defaultLocation;
+    RequestQueue mQueue;
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     Polyline line = null;
 
     ToggleButton mapDirectionToggleButton;
@@ -83,7 +94,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //VOLLEY netRequest
         this.buildGoogleApiClient();
+<<<<<<< HEAD
         googleApiClient.connect();
+=======
+        mGoogleApiClient.connect();
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
         volleyRequest();
 
 
@@ -94,7 +109,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         button.setOnClickListener(buttonClickListener);
         button2.setOnClickListener(buttonClickListener);
         followCheckBox = (CheckBox)findViewById(R.id.checkBox);
+<<<<<<< HEAD
 
+=======
+        //測試能否連接到PHP
+        //先取得data伺服器資料
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
 
     Button.OnClickListener buttonClickListener = new Button.OnClickListener(){
@@ -119,9 +139,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(lastParkingPlaceMarker != null) {
                     lastParkingPlaceMarker.remove();
                 }
+<<<<<<< HEAD
                 parkingPlaceMarker = googleMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 lastParkingPlaceMarker = parkingPlaceMarker;
                 googleMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
+=======
+                parkingPlaceMarker = mMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                lastParkingPlaceMarker = parkingPlaceMarker;
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
             }
         }
     };
@@ -137,7 +163,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };
 
     private synchronized void buildGoogleApiClient(){
+<<<<<<< HEAD
         googleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
+=======
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
     /**
      * Manipulates the map once available.
@@ -149,8 +179,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override//MapsActivity METHOD
+<<<<<<< HEAD
     public void onMapReady(GoogleMap Map){
         googleMap = Map;
+=======
+    public void onMapReady(GoogleMap googleMap){
+        mMap = googleMap;
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
         Location lastLoc = null;
         LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -171,7 +206,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             if(lastLoc != null) {
                 LatLng gpsLastLoc = new LatLng(lastLoc.getLatitude(),lastLoc.getLongitude());
+<<<<<<< HEAD
                 mapAddMarker(googleMap,gpsLastLoc,"上次位置");
+=======
+                mapAddMarker(mMap,gpsLastLoc,"上次位置");
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
 
                 Toast.makeText(this,"服務啟用中",Toast.LENGTH_LONG).show();
             }else{
@@ -179,16 +218,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
+<<<<<<< HEAD
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
 
         mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
         googleMap.setOnMarkerClickListener(this);
+=======
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
+
+        mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
+        mMap.setOnMarkerClickListener(this);
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
     //GOOGLE API METHOD
     @Override
     public void onConnected(Bundle bundle) {
         LocationRequest mLocationRequest = createLocationRequest();
+<<<<<<< HEAD
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
+=======
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
     //GOOGLE API METHOD
     @Override
@@ -207,7 +257,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         latlng = new LatLng(location.getLatitude(),location.getLongitude());
+<<<<<<< HEAD
         mapAddMarker(googleMap, latlng, "！");
+=======
+        mapAddMarker(mMap, latlng, "！");
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
         //畫面固定中心為定位點
         if(followCheckBox.isChecked()) {
             moveToMyLocation();
@@ -218,11 +272,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 line.setVisible(true);
             }
             if(latlng != null) {
+<<<<<<< HEAD
                 if(targetLatlng == null) {
                     Toast.makeText(MapsActivity.this, "請先點選停車位", Toast.LENGTH_SHORT).show();
                     mapDirectionToggleButton.setChecked(false);
                 }else {
                     googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatlng.latitude, targetLatlng.longitude);//開關打開時才進行google導航
+=======
+                if(targetLatLng == null) {
+                    Toast.makeText(MapsActivity.this, "請先點選停車位", Toast.LENGTH_SHORT).show();
+                    mapDirectionToggleButton.setChecked(false);
+                }else {
+                    googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatLng.latitude, targetLatLng.longitude);//開關打開時才進行google導航
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
                 }
             }else{
                 Toast.makeText(MapsActivity.this,"目前尚未取得定位資訊，導航失敗",Toast.LENGTH_LONG).show();
@@ -234,14 +296,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+<<<<<<< HEAD
     //googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+=======
+    //mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     //是只顯示一個點的方法
     private void mapAddMarker(GoogleMap map, LatLng latlng,String title){
 
         if(lastMarker != null) {
             lastMarker.remove();
         }
+<<<<<<< HEAD
         marker = googleMap.addMarker(new MarkerOptions().position(latlng).title(title));
+=======
+        marker = mMap.addMarker(new MarkerOptions().position(latlng).title(title));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
         lastMarker = marker;
     }
 
@@ -253,14 +323,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(JSONArray response) {
                 Double lat = 0.0;
                 Double lng = 0.0;
+<<<<<<< HEAD
                 googleMap.clear();
+=======
+                mMap.clear();
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
                 for(int i = 0; i < response.length(); i++){
                     try {// 處理方式:  JSONARRAY > 用getJSONObject取二維JSON陣列中的一段,再用getString("NAME")取這一段其中的一個元素
                         //必須要先分離出lat和lng才能打點
                         lat = Double.parseDouble(response.getJSONObject(i).getString("lat"));
                         lng = Double.parseDouble(response.getJSONObject(i).getString("lng"));
                         LatLng latLng1 = new LatLng(lat,lng);
+<<<<<<< HEAD
                         googleMap.addMarker(new MarkerOptions().position(latLng1).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+=======
+                        mMap.addMarker(new MarkerOptions().position(latLng1).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -273,12 +351,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MapsActivity.this,"OOPS,看起來資料伺服器有點問題",Toast.LENGTH_SHORT).show();
             }
         });
+<<<<<<< HEAD
         rQueue = Volley.newRequestQueue(this);
         rQueue.add(jsonArrayRequest);
     }
 
     void moveToMyLocation(){
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+=======
+        mQueue = Volley.newRequestQueue(this);
+        mQueue.add(jsonArrayRequest);
+    }
+
+    void moveToMyLocation(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
 
     void googleDirectionRequest(double originLat,double originLng,double destinationLat,double destinationLng){
@@ -298,7 +385,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(line != null) {
                         line.remove();
                     }
+<<<<<<< HEAD
                     line = googleMap.addPolyline(new PolylineOptions().addAll(list).width(12).color(Color.parseColor("#FF0000")).geodesic(true));
+=======
+                    line = mMap.addPolyline(new PolylineOptions().addAll(list).width(12).color(Color.parseColor("#FF0000")).geodesic(true));
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
                 }catch(JSONException e){
                     Toast.makeText(MapsActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
                 }
@@ -310,8 +401,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+<<<<<<< HEAD
         rQueue = Volley.newRequestQueue(this);
         rQueue.add(jsonObjectRequest);
+=======
+        mQueue = Volley.newRequestQueue(this);
+        mQueue.add(jsonObjectRequest);
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
     }
     //針對 "overview_polyline" 編碼過的資訊進行拆解成latlng格式 :(起點latlng,終點latlng)
     private List<LatLng> decodePoly(String encoded){
@@ -353,7 +449,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (lastClickedMarker != null) {
                 lastClickedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             }
+<<<<<<< HEAD
             targetLatlng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+=======
+            targetLatLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+>>>>>>> c8321e35e629e6c320c39c96488d2cd4ca5a042d
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             lastClickedMarker = marker;
         }

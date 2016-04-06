@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript">
+window.onload = function fun1 () {
+	var url = location.href;
+	var temp = url.split("?");
+	for (var i = 0; i < url.length; i++) {
+		document.getElementById('show').innerHTML = temp[1];
+	};
+	
+}
+</script>
+	<div id = "show"></div>
+</body>
+</html>
