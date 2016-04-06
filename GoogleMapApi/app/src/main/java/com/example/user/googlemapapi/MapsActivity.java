@@ -52,17 +52,17 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,LocationListener ,GoogleMap.OnMarkerClickListener{
 
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleMap googleMap;
+    private GoogleApiClient googleApiClient;
     Marker lastMarker = null;
     Marker lastClickedMarker = null;
     Marker marker= null;
     Marker parkingPlaceMarker = null;
     Marker lastParkingPlaceMarker = null;
     LatLng latlng = null;
-    LatLng targetLatLng = null;
+    LatLng targetLatlng = null;
     LatLng defaultLocation;
-    RequestQueue mQueue;
+    RequestQueue rQueue;
     Polyline line = null;
 
     ToggleButton mapDirectionToggleButton;
@@ -83,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //VOLLEY netRequest
         this.buildGoogleApiClient();
-        mGoogleApiClient.connect();
+        googleApiClient.connect();
         volleyRequest();
 
 
@@ -94,8 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         button.setOnClickListener(buttonClickListener);
         button2.setOnClickListener(buttonClickListener);
         followCheckBox = (CheckBox)findViewById(R.id.checkBox);
-        //測試能否連接到PHP
-        //先取得data伺服器資料
+
     }
 
     Button.OnClickListener buttonClickListener = new Button.OnClickListener(){
@@ -120,9 +119,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(lastParkingPlaceMarker != null) {
                     lastParkingPlaceMarker.remove();
                 }
-                parkingPlaceMarker = mMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                parkingPlaceMarker = googleMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 lastParkingPlaceMarker = parkingPlaceMarker;
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
             }
         }
     };
@@ -138,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };
 
     private synchronized void buildGoogleApiClient(){
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
+        googleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
     }
     /**
      * Manipulates the map once available.
@@ -150,8 +149,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override//MapsActivity METHOD
-    public void onMapReady(GoogleMap googleMap){
-        mMap = googleMap;
+    public void onMapReady(GoogleMap Map){
+        googleMap = Map;
         Location lastLoc = null;
         LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -172,7 +171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             if(lastLoc != null) {
                 LatLng gpsLastLoc = new LatLng(lastLoc.getLatitude(),lastLoc.getLongitude());
-                mapAddMarker(mMap,gpsLastLoc,"上次位置");
+                mapAddMarker(googleMap,gpsLastLoc,"上次位置");
 
                 Toast.makeText(this,"服務啟用中",Toast.LENGTH_LONG).show();
             }else{
@@ -180,16 +179,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
 
         mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
-        mMap.setOnMarkerClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
     }
     //GOOGLE API METHOD
     @Override
     public void onConnected(Bundle bundle) {
         LocationRequest mLocationRequest = createLocationRequest();
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
     }
     //GOOGLE API METHOD
     @Override
@@ -208,7 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         latlng = new LatLng(location.getLatitude(),location.getLongitude());
-        mapAddMarker(mMap, latlng, "！");
+        mapAddMarker(googleMap, latlng, "！");
         //畫面固定中心為定位點
         if(followCheckBox.isChecked()) {
             moveToMyLocation();
@@ -219,11 +218,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 line.setVisible(true);
             }
             if(latlng != null) {
-                if(targetLatLng == null) {
+                if(targetLatlng == null) {
                     Toast.makeText(MapsActivity.this, "請先點選停車位", Toast.LENGTH_SHORT).show();
                     mapDirectionToggleButton.setChecked(false);
                 }else {
-                    googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatLng.latitude, targetLatLng.longitude);//開關打開時才進行google導航
+                    googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatlng.latitude, targetLatlng.longitude);//開關打開時才進行google導航
                 }
             }else{
                 Toast.makeText(MapsActivity.this,"目前尚未取得定位資訊，導航失敗",Toast.LENGTH_LONG).show();
@@ -235,14 +234,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-    //mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+    //googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
     //是只顯示一個點的方法
     private void mapAddMarker(GoogleMap map, LatLng latlng,String title){
 
         if(lastMarker != null) {
             lastMarker.remove();
         }
-        marker = mMap.addMarker(new MarkerOptions().position(latlng).title(title));
+        marker = googleMap.addMarker(new MarkerOptions().position(latlng).title(title));
         lastMarker = marker;
     }
 
@@ -254,14 +253,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(JSONArray response) {
                 Double lat = 0.0;
                 Double lng = 0.0;
-                mMap.clear();
+                googleMap.clear();
                 for(int i = 0; i < response.length(); i++){
                     try {// 處理方式:  JSONARRAY > 用getJSONObject取二維JSON陣列中的一段,再用getString("NAME")取這一段其中的一個元素
                         //必須要先分離出lat和lng才能打點
                         lat = Double.parseDouble(response.getJSONObject(i).getString("lat"));
                         lng = Double.parseDouble(response.getJSONObject(i).getString("lng"));
                         LatLng latLng1 = new LatLng(lat,lng);
-                        mMap.addMarker(new MarkerOptions().position(latLng1).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        googleMap.addMarker(new MarkerOptions().position(latLng1).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -274,12 +273,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MapsActivity.this,"OOPS,看起來資料伺服器有點問題",Toast.LENGTH_SHORT).show();
             }
         });
-        mQueue = Volley.newRequestQueue(this);
-        mQueue.add(jsonArrayRequest);
+        rQueue = Volley.newRequestQueue(this);
+        rQueue.add(jsonArrayRequest);
     }
 
     void moveToMyLocation(){
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
     }
 
     void googleDirectionRequest(double originLat,double originLng,double destinationLat,double destinationLng){
@@ -299,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(line != null) {
                         line.remove();
                     }
-                    line = mMap.addPolyline(new PolylineOptions().addAll(list).width(12).color(Color.parseColor("#FF0000")).geodesic(true));
+                    line = googleMap.addPolyline(new PolylineOptions().addAll(list).width(12).color(Color.parseColor("#FF0000")).geodesic(true));
                 }catch(JSONException e){
                     Toast.makeText(MapsActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
                 }
@@ -311,8 +310,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        mQueue = Volley.newRequestQueue(this);
-        mQueue.add(jsonObjectRequest);
+        rQueue = Volley.newRequestQueue(this);
+        rQueue.add(jsonObjectRequest);
     }
     //針對 "overview_polyline" 編碼過的資訊進行拆解成latlng格式 :(起點latlng,終點latlng)
     private List<LatLng> decodePoly(String encoded){
@@ -354,7 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (lastClickedMarker != null) {
                 lastClickedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             }
-            targetLatLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+            targetLatlng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             lastClickedMarker = marker;
         }
