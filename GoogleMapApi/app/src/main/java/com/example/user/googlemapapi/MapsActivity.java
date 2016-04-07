@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button button;
     Button button2;
     CheckBox followCheckBox;
-    SharedPreferences tipsNotShowAgain = null;
+    SharedPreferences tipsDialog = null;
     String url_to_PHP = "http://140.130.19.38:58136/~s12/connect.php";//虎科LAB(測試用)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +129,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     parkingPlaceMarker = googleMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                     lastParkingPlaceMarker = parkingPlaceMarker;
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
-
                 }
             }
         }
@@ -146,9 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };
 
     private synchronized void buildGoogleApiClient(){
-
         googleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addApi(LocationServices.API).build();
-
     }
     /**
      * Manipulates the map once available.
@@ -163,7 +160,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onMapReady(GoogleMap gMap){
         googleMap = gMap;
-
 
         Location lastLoc = null;
         LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -183,28 +179,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
         googleMap.setOnMarkerClickListener(this);
 
-
-        tipsNotShowAgain = getSharedPreferences("tipContainer",0);
-        if(tipsNotShowAgain.getString("tip","").isEmpty()) {
+        tipsDialog = getSharedPreferences("tipContainer",0);
+        if(tipsDialog.getString("tip","").isEmpty()) {
             AlertDialog.Builder noticeBuilder = new AlertDialog.Builder(this);
             noticeBuilder.setTitle("notice")
                     .setMessage("此為開發中系統，故目前停車位範圍只有興大附近")
                     .setNegativeButton("關閉", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            tipsNotShowAgain = getSharedPreferences("tipContainer",0);
-                            tipsNotShowAgain.edit().putString("tip", "1").apply();
+                            tipsDialog = getSharedPreferences("tipContainer",0);
+                            tipsDialog.edit().putString("tip", "1").apply();
                         }
-                    })
-                    .create()
-                    .show();
+                    }).create().show();
         }
     }
     //GOOGLE API METHOD
     @Override
     public void onConnected(Bundle bundle) {
         LocationRequest mLocationRequest = createLocationRequest();
-
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
     }
     //GOOGLE API METHOD
@@ -224,14 +216,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         latlng = new LatLng(location.getLatitude(),location.getLongitude());
-
         mapAddMarker(googleMap, latlng, "！");
-
         //畫面固定中心為定位點
         if(followCheckBox.isChecked()) {
             moveToMyLocation();
         }
-
         if(mapDirectionToggleButton.isChecked()) {
             if(line != null){//沒加這個會閃退
                 line.setVisible(true);
@@ -243,7 +232,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mapDirectionToggleButton.setChecked(false);
                 }else {
                     googleDirectionRequest(latlng.latitude, latlng.longitude, targetLatlng.latitude, targetLatlng.longitude);//開關打開時才進行google導航
-
                 }
             }else{
                 Toast.makeText(MapsActivity.this,"目前尚未取得定位資訊，導航失敗",Toast.LENGTH_LONG).show();
@@ -256,9 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
     //googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-
     //mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-
     //是只顯示一個點的方法
     private void mapAddMarker(GoogleMap map, LatLng latlng,String title){
 
@@ -304,7 +290,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     void moveToMyLocation(){
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-
     }
 
     void googleDirectionRequest(double originLat,double originLng,double destinationLat,double destinationLng){
@@ -336,11 +321,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
         rQueue = Volley.newRequestQueue(this);
         rQueue.add(jsonObjectRequest);
-
-
     }
     //針對 "overview_polyline" 編碼過的資訊進行拆解成latlng格式 :(起點latlng,終點latlng)
     private List<LatLng> decodePoly(String encoded){
