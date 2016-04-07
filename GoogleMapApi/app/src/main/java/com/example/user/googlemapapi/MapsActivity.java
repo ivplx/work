@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button button;
     Button button2;
     CheckBox followCheckBox;
-
+    SharedPreferences tipsNotShowAgain = null;
     String url_to_PHP = "http://140.130.19.38:58136/~s12/connect.php";//虎科LAB(測試用)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //VOLLEY netRequest
         this.buildGoogleApiClient();
         googleApiClient.connect();
-
         volleyRequest();
-
-
         defaultLocation = new LatLng(24.1367938,120.685012);
         mapDirectionToggleButton = (ToggleButton)findViewById(R.id.directionToggleButton);
         button = (Button)findViewById(R.id.buttonMemory);
@@ -94,38 +91,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         button.setOnClickListener(buttonClickListener);
         button2.setOnClickListener(buttonClickListener);
         followCheckBox = (CheckBox)findViewById(R.id.checkBox);
+
         //測試能否連接到PHP
         //先取得data伺服器資料
     }
-
     Button.OnClickListener buttonClickListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
-            if(v.getId() == R.id.buttonMemory){
-                if(latlng != null) {
-                    SharedPreferences locSetting = getSharedPreferences("location", 0);
-                    locSetting.edit().putString("locLat", String.valueOf(latlng.latitude)).apply();
-                    locSetting.edit().putString("locLng", String.valueOf(latlng.longitude)).apply();
-                    Toast.makeText(MapsActivity.this, "已儲存停車資訊", Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(MapsActivity.this,"目前似乎無法儲存現在位置",Toast.LENGTH_LONG).show();
+            SharedPreferences locSetting;
+            locSetting = getSharedPreferences("location",0);
+            if (locSetting.getString("locLat","").isEmpty() && locSetting.getString("locLng","").isEmpty()) {
+                locSetting.edit().putString("locLat","24.1196074").apply();//24.1196074,120.6719429 NCHU
+                locSetting.edit().putString("locLng","120.6719429").apply();
+            } else {
+
+                if (v.getId() == R.id.buttonMemory) {
+                    if (latlng != null) {
+                        locSetting = getSharedPreferences("location", 0);
+                        locSetting.edit().putString("locLat", String.valueOf(latlng.latitude)).apply();
+                        locSetting.edit().putString("locLng", String.valueOf(latlng.longitude)).apply();
+                        Toast.makeText(MapsActivity.this, "已儲存停車資訊", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(MapsActivity.this, "目前似乎無法儲存現在位置", Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-            if(v.getId() == R.id.buttonDisplay){
-                SharedPreferences locSetting = getSharedPreferences("location", 0);
-                String strLat = locSetting.getString("locLat", "");
-                String strLng = locSetting.getString("locLng","");
-                LatLng locLatlng = new LatLng(Double.parseDouble(strLat),Double.parseDouble(strLng));
-                //mapAddMarker(mMap,locLatlng,"停車位在這");
-                if(lastParkingPlaceMarker != null) {
-                    lastParkingPlaceMarker.remove();
+                if (v.getId() == R.id.buttonDisplay) {
+
+                    locSetting = getSharedPreferences("location", 0);
+                    String strLat = locSetting.getString("locLat","");
+                    String strLng = locSetting.getString("locLng", "");
+                    LatLng locLatlng = new LatLng(Double.parseDouble(strLat), Double.parseDouble(strLng));
+                    //mapAddMarker(mMap,locLatlng,"停車位在這");
+                    if (lastParkingPlaceMarker != null) {
+                        lastParkingPlaceMarker.remove();
+                    }
+
+                    parkingPlaceMarker = googleMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    lastParkingPlaceMarker = parkingPlaceMarker;
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
+
                 }
-
-                parkingPlaceMarker = googleMap.addMarker(new MarkerOptions().position(locLatlng).title("停車位在這").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                lastParkingPlaceMarker = parkingPlaceMarker;
-                googleMap.animateCamera(CameraUpdateFactory.newLatLng(locLatlng));
-
-
             }
         }
     };
@@ -156,8 +161,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override//MapsActivity METHOD
 
-    public void onMapReady(GoogleMap Map){
-        googleMap = Map;
+    public void onMapReady(GoogleMap gMap){
+        googleMap = gMap;
 
 
         Location lastLoc = null;
@@ -172,29 +177,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startActivity(intent);
                 }
             }).setNegativeButton("否",null).create().show();
-        }else{
-            try {
-                lastLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }catch(SecurityException se){
-                Toast.makeText(MapsActivity.this,"無法取得定位資訊",Toast.LENGTH_SHORT).show();
-            }
-            if(lastLoc != null) {
-                LatLng gpsLastLoc = new LatLng(lastLoc.getLatitude(),lastLoc.getLongitude());
-
-                mapAddMarker(googleMap,gpsLastLoc,"上次位置");
-
-                Toast.makeText(this,"服務啟用中",Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(this,"未能取得上一次定位資訊，定位標記可能較晚出現",Toast.LENGTH_LONG).show();
-            }
-
         }
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
-
         mapDirectionToggleButton.setOnCheckedChangeListener(directionCheckListener);
         googleMap.setOnMarkerClickListener(this);
 
+
+        tipsNotShowAgain = getSharedPreferences("tipContainer",0);
+        if(tipsNotShowAgain.getString("tip","").isEmpty()) {
+            AlertDialog.Builder noticeBuilder = new AlertDialog.Builder(this);
+            noticeBuilder.setTitle("notice")
+                    .setMessage("此為開發中系統，故目前停車位範圍只有興大附近")
+                    .setNegativeButton("關閉", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            tipsNotShowAgain = getSharedPreferences("tipContainer",0);
+                            tipsNotShowAgain.edit().putString("tip", "1").apply();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
     }
     //GOOGLE API METHOD
     @Override
@@ -387,4 +391,3 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 }
-
